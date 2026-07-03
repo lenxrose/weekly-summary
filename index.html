@@ -522,6 +522,59 @@
     </div>
   </header>
 
+  <!-- PROGRESS SINCE LAST WEEK -->
+  <p class="section-label">Progress Since Last Week</p>
+  <div class="key-question-card">
+    <div class="kq-header">
+      <span class="kq-icon">↑</span>
+      <div>
+        <div class="kq-label">Week-over-Week Context</div>
+        <div class="kq-title">How this week's structured re-test compares to June 26</div>
+      </div>
+    </div>
+    <div class="kq-body">
+
+      <div class="kq-answer">
+        The June 26 engineering report cited <strong>~65% accuracy</strong>, up from ~30% in the second week of June, after fixes for duplicate shopper records across camera zones. That figure was a self-reported rollup — it was not yet benchmarked exact-path-by-exact-path against scripted ground truth.
+        <br><br>
+        This week's tests (Jun 30 – Jul 3) introduce that ground-truth-matched benchmark for the first time, using a strict True Positive Rate: does the detected journey path exactly match the scripted path. Against that harder bar, <strong>Scenario B improved 10× — from 4% to 41% TP rate</strong> — and its best session beat ground truth on conversion rate (27.6% vs. 25% GT). Scenario A (the higher-density Stress Test) remains at 0% TP, consistent with the "cross-zone identity persistence" and "checkout zone detection" items flagged as open in the June 26 report.
+      </div>
+
+      <div class="kq-paths-grid">
+        <div class="kq-path partial">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-partial">Jun 26 — Self-reported estimate</span>
+          </div>
+          <div class="kq-path-name">~65% accuracy (up from ~30%)</div>
+          <div class="kq-path-stats">
+            <span class="kq-path-note">Rollup estimate from the engineering team, not matched to ground truth per path · primary fix: merged duplicate shopper IDs across overlapping cameras</span>
+          </div>
+        </div>
+        <div class="kq-path confirmed">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-confirmed">Jun 30 – Jul 3 — Ground-truth matched</span>
+          </div>
+          <div class="kq-path-name">Scenario B: 4% → 41% True Positive Rate</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:41%;background:var(--status-good)"></div>
+          </div>
+          <div class="kq-path-stats">
+            <span>10× improvement, Jul 1 → Jul 2</span>
+            <span class="kq-path-note">First metric benchmarked exactly against scripted ground truth paths</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kq-callout">
+        <span class="kq-callout-icon">⚠</span>
+        <div>
+          <strong>Note on comparing the two figures:</strong> the June 26 ~65% and this week's TP rates are not the same metric, so they shouldn't be read as a single continuous trend line. What's real and comparable week-over-week is the underlying fix: identity persistence across cameras is measurably better, and it shows up as a genuine 10× TP rate gain in Scenario B. Scenario A has not yet crossed into measurable territory and needs the zone-attribution work in the Recommended Next Actions below.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- SCENARIO OVERVIEW CARDS -->
   <p class="section-label">Test Scenarios</p>
   <div class="scenario-row">

@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journeys Pattern Testing — Weekly Summary · June 30 – July 2, 2026</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --surface-page: #f4f4f2;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    /* Scenario A = blue, Scenario B = violet */
+    --scen-a: #2a78d6;
+    --scen-a-light: #e8f1fc;
+    --scen-a-text: #174d8f;
+    --scen-b: #4a3aa7;
+    --scen-b-light: #edeaff;
+    --scen-b-text: #2e2470;
+    --series-aqua: #1baf7a;
+    --series-yellow: #eda100;
+    --status-good: #0ca30c;
+    --status-good-text: #006300;
+    --status-good-bg: #dcf6dc;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+    --status-critical-bg: #fde8e8;
+    --status-critical-text: #9a1e1e;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19;
+      --surface-page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --gridline: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --scen-a: #3987e5;
+      --scen-a-light: #1a2d46;
+      --scen-a-text: #7eb8ff;
+      --scen-b: #9085e9;
+      --scen-b-light: #1e1a38;
+      --scen-b-text: #b8b0ff;
+      --status-good-text: #0ca30c;
+      --status-good-bg: #0d2e0d;
+      --status-critical-bg: #2e0e0e;
+      --status-critical-text: #e66767;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    background: var(--surface-page);
+    color: var(--text-primary);
+    line-height: 1.5;
+    padding: 32px 24px 64px;
+  }
+  .page-wrap { max-width: 980px; margin: 0 auto; }
+
+  /* ── HEADER ─────────────────────────────── */
+  .page-header { margin-bottom: 28px; }
+  .page-header .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;
+  }
+  .page-header h1 { font-size: 26px; font-weight: 800; line-height: 1.2; }
+  .page-header .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+  .meta-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .meta-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px;
+    background: var(--surface-1); border: 1px solid var(--border);
+    font-size: 12px; color: var(--text-secondary);
+  }
+  .meta-chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ── SECTION LABEL ─────────────────────── */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 14px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--gridline);
+  }
+
+  /* ── SCENARIO CARDS ─────────────────────── */
+  .scenario-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 620px) { .scenario-row { grid-template-columns: 1fr; } }
+  .scenario-card {
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--surface-1);
+    overflow: hidden;
+  }
+  .scenario-card-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .scenario-card.scen-a .scenario-card-header { background: var(--scen-a-light); }
+  .scenario-card.scen-b .scenario-card-header { background: var(--scen-b-light); }
+  .scenario-badge {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.07em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 6px;
+  }
+  .scen-a .scenario-badge { background: var(--scen-a); color: #fff; }
+  .scen-b .scenario-badge { background: var(--scen-b); color: #fff; }
+  .scenario-title { font-size: 14px; font-weight: 700; }
+  .scen-a .scenario-title { color: var(--scen-a-text); }
+  .scen-b .scenario-title { color: var(--scen-b-text); }
+  .scenario-sessions { font-size: 12px; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
+  .scenario-body { padding: 14px 16px; }
+  .scenario-specs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .spec-item { }
+  .spec-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 3px; }
+  .spec-value { font-size: 16px; font-weight: 800; line-height: 1; }
+  .scen-a .spec-value { color: var(--scen-a); }
+  .scen-b .spec-value { color: var(--scen-b); }
+  .spec-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .scenario-paths {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--gridline);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .path-tag {
+    display: inline-block;
+    background: var(--surface-page);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 7px;
+    margin: 2px 3px 2px 0;
+    font-size: 11px;
+    font-family: monospace;
+  }
+
+  /* ── STAT TILES ─────────────────────────── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 680px) { .stat-row { grid-template-columns: repeat(2,1fr); } }
+  .stat-tile {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 16px 14px;
+  }
+  .tile-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .tile-value { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+  .tile-sub { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
+  .tile-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 700; padding: 2px 7px;
+    border-radius: 4px; margin-top: 6px;
+  }
+  .badge-good { background: var(--status-good-bg); color: var(--status-good-text); }
+  .badge-warn { background: #fff3d0; color: #8a5e00; }
+  .badge-crit { background: var(--status-critical-bg); color: var(--status-critical-text); }
+
+  /* ── CHART CARDS ─────────────────────────── */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 680px) { .charts-row { grid-template-columns: 1fr; } }
+  .chart-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 18px 14px;
+  }
+  .chart-card h3 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .chart-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .chart-svg-wrap { position: relative; }
+  .tooltip {
+    position: absolute;
+    background: var(--text-primary); color: var(--surface-1);
+    padding: 7px 11px; border-radius: 6px; font-size: 12px;
+    pointer-events: none; opacity: 0; transition: opacity 0.12s;
+    white-space: nowrap; z-index: 10;
+  }
+  .tooltip.visible { opacity: 1; }
+  .tt-label { color: #aaa; font-size: 11px; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .tick-label { fill: var(--text-muted); font-size: 11px; }
+  .axis-line { stroke: var(--baseline); stroke-width: 1; }
+  .grid-line { stroke: var(--gridline); stroke-width: 1; }
+
+  /* Scenario zone bands on charts */
+  .zone-a { fill: var(--scen-a); opacity: 0.06; }
+  .zone-b { fill: var(--scen-b); opacity: 0.06; }
+  .zone-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .legend-line { width: 18px; height: 2px; flex-shrink: 0; border-radius: 2px; }
+  .legend-dash { width: 18px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
+
+  /* ── SESSIONS TABLE ─────────────────────── */
+  .table-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .table-card-header { padding: 14px 18px; border-bottom: 1px solid var(--gridline); }
+  .table-card-header h3 { font-size: 13px; font-weight: 700; }
+  .table-card-header p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted);
+    padding: 9px 14px; border-bottom: 1px solid var(--gridline);
+  }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--gridline); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-page); }
+  /* Scenario row headers */
+  .scenario-group-row td {
+    background: var(--scen-a-light);
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; padding: 7px 14px;
+    color: var(--scen-a-text);
+    border-bottom: 1px solid var(--gridline);
+  }
+  .scenario-group-row.scen-b td {
+    background: var(--scen-b-light);
+    color: var(--scen-b-text);
+  }
+  .session-chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .session-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .delta-pos { color: var(--status-good-text); font-weight: 600; }
+  .delta-neg { color: var(--status-critical); font-weight: 600; }
+  .best-mark {
+    display: inline-block;
+    background: var(--status-good-bg); color: var(--status-good-text);
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.07em; padding: 2px 6px; border-radius: 4px; margin-left: 6px;
+  }
+  .tp-pill {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 12px; font-weight: 700; font-size: 12px;
+  }
+  .tp-0   { background: var(--status-critical-bg); color: var(--status-critical-text); }
+  .tp-low { background: #fff3d0; color: #8a5e00; }
+  .tp-high { background: var(--status-good-bg); color: var(--status-good-text); }
+
+  /* ── WITHIN-SCENARIO COMPARISON ──────────── */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 620px) { .compare-row { grid-template-columns: 1fr; } }
+  .compare-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .compare-header {
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--gridline);
+  }
+  .compare-card.scen-a .compare-header { background: var(--scen-a-light); }
+  .compare-card.scen-b .compare-header { background: var(--scen-b-light); }
+  .compare-header-label { font-size: 12px; font-weight: 700; }
+  .scen-a .compare-header-label { color: var(--scen-a-text); }
+  .scen-b .compare-header-label { color: var(--scen-b-text); }
+  .compare-body { padding: 0; }
+  .compare-metric-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gridline);
+    font-size: 12px;
+    gap: 8px;
+    align-items: center;
+  }
+  .compare-metric-row:last-child { border-bottom: none; }
+  .compare-metric-row .metric-name { color: var(--text-secondary); font-size: 11px; }
+  .compare-metric-row .v1 { font-weight: 700; color: var(--text-primary); }
+  .compare-metric-row .v2 { font-weight: 700; }
+  .compare-metric-row .v2.better { color: var(--status-good-text); }
+  .compare-metric-row .v2.worse  { color: var(--status-critical); }
+  .compare-metric-row .v2.same   { color: var(--text-secondary); }
+  .compare-col-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    padding: 7px 16px;
+    background: var(--surface-page);
+    border-bottom: 1px solid var(--gridline);
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text-muted);
+    gap: 8px;
+  }
+
+  /* ── ISSUES ─────────────────────────────── */
+  .issues-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 680px) { .issues-grid { grid-template-columns: 1fr; } }
+  .issue-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    border-left: 4px solid transparent;
+  }
+  .issue-card.sev-critical { border-left-color: var(--status-critical); }
+  .issue-card.sev-high     { border-left-color: var(--status-serious); }
+  .issue-card.sev-medium   { border-left-color: var(--status-warning); }
+  .issue-sev {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 6px;
+  }
+  .sev-critical .issue-sev { color: var(--status-critical); }
+  .sev-high .issue-sev     { color: var(--status-serious); }
+  .sev-medium .issue-sev   { color: var(--status-warning); }
+  .issue-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .issue-desc  { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .issue-sessions { margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+
+  /* ── RECOMMENDATIONS ────────────────────── */
+  .recs-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+  .rec-item {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 13px 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .rec-num { font-size: 13px; font-weight: 800; color: var(--scen-a); min-width: 22px; margin-top: 1px; }
+  .rec-body h4 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .rec-body p  { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* ── KEY QUESTION CARD ──────────────────── */
+  .key-question-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .kq-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #0d2a52 0%, #1a1060 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .kq-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .kq-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.09em; color: rgba(255,255,255,0.55); margin-bottom: 3px;
+  }
+  .kq-title {
+    font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;
+  }
+  .kq-body {
+    padding: 20px;
+  }
+  .kq-answer {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    background: var(--surface-page);
+    border-left: 4px solid var(--status-good);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 20px;
+  }
+  .kq-paths-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .kq-path {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .kq-path.confirmed  { border-color: var(--status-good); background: #f5fdf5; }
+  .kq-path.partial    { background: var(--surface-page); }
+  .kq-path.undetected { background: var(--surface-page); opacity: 0.75; }
+  @media (prefers-color-scheme: dark) {
+    .kq-path.confirmed { background: #0d2e0d; }
+    .kq-path.partial   { background: var(--surface-page); }
+    .kq-path.undetected { background: var(--surface-page); }
+  }
+  .kq-path-header { margin-bottom: 6px; }
+  .kq-path-status {
+    display: inline-block;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; padding: 2px 8px; border-radius: 4px;
+  }
+  .status-confirmed  { background: var(--status-good-bg); color: var(--status-good-text); }
+  .status-partial    { background: #e0f7ef; color: #0a6b4a; }
+  .status-undetected { background: var(--status-critical-bg); color: var(--status-critical-text); }
+  @media (prefers-color-scheme: dark) {
+    .status-partial { background: #0a2e22; color: #2dc995; }
+  }
+  .kq-path-name {
+    font-size: 14px; font-weight: 700;
+    color: var(--text-primary);
+    font-family: monospace;
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+  .kq-path-bar-wrap {
+    position: relative;
+    height: 8px;
+    background: var(--gridline);
+    border-radius: 4px;
+    margin-bottom: 7px;
+    overflow: visible;
+  }
+  .kq-path-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
+    min-width: 0;
+  }
+  .kq-zero-label {
+    position: absolute;
+    left: 6px; top: -1px;
+    font-size: 11px; font-weight: 700;
+    color: var(--status-critical);
+  }
+  .kq-path-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .kq-path-note {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .kq-callout {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #fff8e6;
+    border: 1px solid #f5d97a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #5a3d00;
+    line-height: 1.55;
+  }
+  @media (prefers-color-scheme: dark) {
+    .kq-callout { background: #2a1f00; border-color: #6b4c00; color: #e0c060; }
+  }
+  .kq-callout-icon {
+    font-size: 15px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  /* ── FOOTER ─────────────────────────────── */
+  .page-footer {
+    border-top: 1px solid var(--gridline); padding-top: 16px; margin-top: 12px;
+    font-size: 11px; color: var(--text-muted);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <div class="label">Weekly Testing Report</div>
+    <h1>Journeys Pattern Testing</h1>
+    <p class="subtitle">Retail store — shopper journey tracking &amp; purchase path accuracy · 2 scenarios, 5 sessions</p>
+    <div class="meta-row">
+      <span class="meta-chip"><span class="dot" style="background:var(--scen-a)"></span>Scenario A: Group &amp; Shelf Interaction Stress Test — Jun 30 &amp; Jul 3 (3 sessions)</span>
+      <span class="meta-chip"><span class="dot" style="background:var(--scen-b)"></span>Scenario B: Incremental Number of Actors — Jul 1 &amp; 2 (2 sessions)</span>
+      <span class="meta-chip"><span class="dot" style="background:var(--status-good)"></span>Strong improvement within each scenario</span>
+    </div>
+  </header>
+
+  <!-- SCENARIO OVERVIEW CARDS -->
+  <p class="section-label">Test Scenarios</p>
+  <div class="scenario-row">
+
+    <div class="scenario-card scen-a">
+      <div class="scenario-card-header">
+        <span class="scenario-badge">Scenario A</span>
+        <span class="scenario-title">Group &amp; Shelf Interaction Stress Test</span>
+        <span class="scenario-sessions">Jun 30 &amp; Jul 3 · 3 sessions</span>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-specs">
+          <div class="spec-item scen-a">
+            <div class="spec-label">Shoppers (GT)</div>
+            <div class="spec-value">36</div>
+          </div>
+          <div class="spec-item scen-a">
+            <div class="spec-label">Converters (GT)</div>
+            <div class="spec-value">18</div>
+          </div>
+          <div class="spec-item scen-a">
+            <div class="spec-label">Conv. Rate (GT)</div>
+            <div class="spec-value">50%</div>
+          </div>
+          <div class="spec-item scen-a">
+            <div class="spec-label">Journey Paths</div>
+            <div class="spec-value">5</div>
+          </div>
+        </div>
+        <div class="scenario-paths">
+          <strong style="font-size:11px">Stress test focus:</strong><br>
+          <span class="path-tag">Groups shopping shelves simultaneously</span>
+          <span class="path-tag">High shopper density (GT: 36 people)</span>
+          <span class="path-tag">Multi-destination journeys under load</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card scen-b">
+      <div class="scenario-card-header">
+        <span class="scenario-badge">Scenario B</span>
+        <span class="scenario-title">Incremental Number of Actors</span>
+        <span class="scenario-sessions">Jul 1 &amp; 2 · 2 sessions</span>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-specs">
+          <div class="spec-item scen-b">
+            <div class="spec-label">Shoppers (GT)</div>
+            <div class="spec-value">36</div>
+          </div>
+          <div class="spec-item scen-b">
+            <div class="spec-label">Converters (GT)</div>
+            <div class="spec-value">9</div>
+          </div>
+          <div class="spec-item scen-b">
+            <div class="spec-label">Conv. Rate (GT)</div>
+            <div class="spec-value">25%</div>
+          </div>
+          <div class="spec-item scen-b">
+            <div class="spec-label">Journey Paths</div>
+            <div class="spec-value">7</div>
+          </div>
+        </div>
+        <div class="scenario-paths">
+          <strong style="font-size:11px">Incremental actor focus:</strong><br>
+          <span class="path-tag">Jul 1: smaller actor group (70 detected)</span>
+          <span class="path-tag">Jul 2: reduced further (29 detected, near GT)</span>
+          <span class="path-tag">Testing system accuracy as crowd size grows</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STAT TILES — highlight within-scenario wins -->
+  <p class="section-label">Week at a Glance</p>
+  <div class="stat-row">
+    <div class="stat-tile">
+      <div class="tile-label">Scen A — Stress Test TP Rate</div>
+      <div class="tile-value" style="color:var(--status-critical)">0%</div>
+      <div class="tile-sub">All 3 Scenario A sessions</div>
+      <div class="tile-badge badge-crit">No exact path matches yet</div>
+    </div>
+    <div class="stat-tile">
+      <div class="tile-label">Scen B — Incremental Actors TP Rate</div>
+      <div class="tile-value" style="color:var(--status-good-text)">41%</div>
+      <div class="tile-sub">Jul 2 session (up from 4%)</div>
+      <div class="tile-badge badge-good">↑ 10× improvement</div>
+    </div>
+    <div class="stat-tile">
+      <div class="tile-label">Scen B — Conv. Rate (Jul 2)</div>
+      <div class="tile-value" style="color:var(--scen-b)">27.6%</div>
+      <div class="tile-sub">vs. 25.0% ground truth</div>
+      <div class="tile-badge badge-good">✓ Exceeded target</div>
+    </div>
+    <div class="stat-tile">
+      <div class="tile-label">ID Fragmentation (Best)</div>
+      <div class="tile-value" style="color:var(--status-critical)">3.7×</div>
+      <div class="tile-sub">All sessions · target is 1×</div>
+      <div class="tile-badge badge-crit">Persistent across both</div>
+    </div>
+  </div>
+
+  <!-- WITHIN-SCENARIO PROGRESS CHARTS -->
+  <p class="section-label">Progress Within Each Scenario</p>
+  <div class="charts-row">
+
+    <!-- SCENARIO A — TP chart (both sessions = 0%) -->
+    <div class="chart-card">
+      <h3>Scenario A — True Positive Rate</h3>
+      <p class="chart-sub">Group &amp; Shelf Stress Test · Jun 30 v1, v2 &amp; Jul 3</p>
+      <div class="chart-svg-wrap" id="tpa-wrap">
+        <svg viewBox="0 0 340 180" width="100%" aria-label="Scenario A TP rate">
+          <line class="grid-line" x1="52" y1="20" x2="310" y2="20"/>
+          <line class="grid-line" x1="52" y1="65" x2="310" y2="65"/>
+          <line class="grid-line" x1="52" y1="110" x2="310" y2="110"/>
+          <line class="axis-line" x1="52" y1="155" x2="310" y2="155"/>
+          <text class="tick-label" text-anchor="end" x="46" y="24">100%</text>
+          <text class="tick-label" text-anchor="end" x="46" y="69">66%</text>
+          <text class="tick-label" text-anchor="end" x="46" y="114">33%</text>
+          <text class="tick-label" text-anchor="end" x="46" y="159">0%</text>
+          <!-- v1 bar -->
+          <rect x="72" y="152" width="44" height="3" rx="2" fill="var(--scen-a)" opacity="0.5"/>
+          <text class="tick-label" text-anchor="middle" x="94" y="146">0%</text>
+          <text class="tick-label" text-anchor="middle" x="94" y="172">Jun 30 v1</text>
+          <!-- v2 bar -->
+          <rect x="148" y="152" width="44" height="3" rx="2" fill="var(--scen-a)" opacity="0.5"/>
+          <text class="tick-label" text-anchor="middle" x="170" y="146">0%</text>
+          <text class="tick-label" text-anchor="middle" x="170" y="172">Jun 30 v2</text>
+          <!-- Jul 3 bar -->
+          <rect x="224" y="152" width="44" height="3" rx="2" fill="var(--scen-a)" opacity="0.5"/>
+          <text class="tick-label" text-anchor="middle" x="246" y="146">0%</text>
+          <text class="tick-label" text-anchor="middle" x="246" y="172">Jul 3</text>
+          <!-- note -->
+          <text x="175" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="var(--status-critical)" opacity="0.7">No exact path matches</text>
+          <text x="175" y="107" text-anchor="middle" font-size="11" fill="var(--text-muted)">across all 3 sessions</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--scen-a)"></span>Scenario A — Group &amp; Shelf Stress Test</span>
+      </div>
+    </div>
+
+    <!-- SCENARIO B — TP chart (4% → 41%) -->
+    <div class="chart-card">
+      <h3>Scenario B — True Positive Rate</h3>
+      <p class="chart-sub">Incremental Actors · Jul 1 vs. Jul 2</p>
+      <div class="chart-svg-wrap" id="tpb-wrap">
+        <svg viewBox="0 0 340 180" width="100%" aria-label="Scenario B TP rate">
+          <line class="grid-line" x1="52" y1="20" x2="310" y2="20"/>
+          <line class="grid-line" x1="52" y1="65" x2="310" y2="65"/>
+          <line class="grid-line" x1="52" y1="110" x2="310" y2="110"/>
+          <line class="axis-line" x1="52" y1="155" x2="310" y2="155"/>
+          <text class="tick-label" text-anchor="end" x="46" y="24">100%</text>
+          <text class="tick-label" text-anchor="end" x="46" y="69">66%</text>
+          <text class="tick-label" text-anchor="end" x="46" y="114">33%</text>
+          <text class="tick-label" text-anchor="end" x="46" y="159">0%</text>
+          <!-- Jul 1: 4% → h = 0.04/1 * 135 = 5.4, y = 155-5.4=149.6 -->
+          <rect x="100" y="149.6" width="50" height="5.4" rx="2" fill="var(--scen-b)" opacity="0.6"/>
+          <text x="125" y="144" text-anchor="middle" font-size="11" fill="var(--text-secondary)">4%</text>
+          <text class="tick-label" text-anchor="middle" x="125" y="172">Jul 1</text>
+          <!-- Jul 2: 41% → h = 0.41 * 135 = 55.35, y = 155-55.35=99.65 -->
+          <rect x="200" y="99.65" width="50" height="55.35" rx="2" fill="var(--scen-b)"/>
+          <text x="225" y="93" text-anchor="middle" font-size="13" font-weight="800" fill="var(--scen-b)">41%</text>
+          <text class="tick-label" text-anchor="middle" x="225" y="172">Jul 2</text>
+          <!-- Arrow / improvement indicator -->
+          <line x1="160" y1="127" x2="192" y2="109" stroke="var(--status-good)" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <defs>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--status-good)"/>
+            </marker>
+          </defs>
+          <text x="170" y="118" text-anchor="middle" font-size="10" font-weight="700" fill="var(--status-good-text)">+37pp</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--scen-b)"></span>Scenario B — Incremental Actors</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONVERSION RATE WITHIN-SCENARIO -->
+  <div class="compare-row" style="margin-bottom:32px">
+
+    <div class="chart-card">
+      <h3>Scenario A — Conversion Rate</h3>
+      <p class="chart-sub">Group &amp; Shelf Stress Test · GT: 50%</p>
+      <svg viewBox="0 0 340 160" width="100%" style="margin-top:4px">
+        <!-- GT line at 50% → y=20 -->
+        <line x1="52" x2="310" y1="20" y2="20" stroke="var(--series-aqua)" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="314" y="24" font-size="10" fill="var(--series-aqua)" font-weight="700">GT 50%</text>
+        <line class="grid-line" x1="52" y1="65" x2="310" y2="65"/>
+        <line class="grid-line" x1="52" y1="110" x2="310" y2="110"/>
+        <line class="axis-line" x1="52" y1="140" x2="310" y2="140"/>
+        <text class="tick-label" text-anchor="end" x="46" y="24">50%</text>
+        <text class="tick-label" text-anchor="end" x="46" y="69">33%</text>
+        <text class="tick-label" text-anchor="end" x="46" y="114">16%</text>
+        <text class="tick-label" text-anchor="end" x="46" y="144">0%</text>
+        <!-- v1: 17.7% → h=(17.7/50)*120=42.5, y=97.5 -->
+        <rect x="72" y="97.5" width="44" height="42.5" rx="3" fill="var(--scen-a)" opacity="0.6"/>
+        <text x="94" y="91" text-anchor="middle" font-size="11" fill="var(--scen-a)" font-weight="700">17.7%</text>
+        <text class="tick-label" text-anchor="middle" x="94" y="156">Jun 30 v1</text>
+        <!-- v2: 10.4% → h=24.96, y=115.04 -->
+        <rect x="148" y="115.04" width="44" height="24.96" rx="3" fill="var(--scen-a)" opacity="0.45"/>
+        <text x="170" y="109" text-anchor="middle" font-size="11" fill="var(--scen-a)" font-weight="700">10.4%</text>
+        <text class="tick-label" text-anchor="middle" x="170" y="156">Jun 30 v2</text>
+        <!-- Jul 3: 26.4% → h=(26.4/50)*120=63.36, y=76.64 -->
+        <rect x="224" y="76.64" width="44" height="63.36" rx="3" fill="var(--scen-a)"/>
+        <text x="246" y="70" text-anchor="middle" font-size="11" fill="var(--scen-a)" font-weight="800">26.4%</text>
+        <text class="tick-label" text-anchor="middle" x="246" y="156">Jul 3</text>
+        <!-- trend arrow -->
+        <polyline points="94,97.5 170,115.04 246,76.64" fill="none" stroke="var(--scen-a)" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.5"/>
+      </svg>
+      <div class="legend" style="margin-top:4px">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--scen-a)"></span>Detected</span>
+        <span class="legend-item"><span class="legend-dash" style="border-color:var(--series-aqua)"></span>GT target (50%)</span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>Scenario B — Conversion Rate</h3>
+      <p class="chart-sub">Incremental Actors · GT: 25%</p>
+      <svg viewBox="0 0 340 160" width="100%" style="margin-top:4px">
+        <!-- GT line at 25% → y = 140 - (25/50)*120 = 140-60=80 -->
+        <line x1="52" x2="310" y1="80" y2="80" stroke="var(--series-aqua)" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="314" y="84" font-size="10" fill="var(--series-aqua)" font-weight="700">GT 25%</text>
+        <line class="grid-line" x1="52" y1="20" x2="310" y2="20"/>
+        <line class="grid-line" x1="52" y1="65" x2="310" y2="65"/>
+        <line class="grid-line" x1="52" y1="110" x2="310" y2="110"/>
+        <line class="axis-line" x1="52" y1="140" x2="310" y2="140"/>
+        <text class="tick-label" text-anchor="end" x="46" y="24">50%</text>
+        <text class="tick-label" text-anchor="end" x="46" y="69">33%</text>
+        <text class="tick-label" text-anchor="end" x="46" y="114">16%</text>
+        <text class="tick-label" text-anchor="end" x="46" y="144">0%</text>
+        <!-- Jul 1: 10.0% → h=(10/50)*120=24, y=116 -->
+        <rect x="100" y="116" width="50" height="24" rx="3" fill="var(--scen-b)" opacity="0.5"/>
+        <text x="125" y="110" text-anchor="middle" font-size="11" fill="var(--scen-b)" font-weight="700">10.0%</text>
+        <text class="tick-label" text-anchor="middle" x="125" y="156">Jul 1</text>
+        <!-- Jul 2: 27.6% → h=(27.6/50)*120=66.24, y=73.76 -->
+        <rect x="200" y="73.76" width="50" height="66.24" rx="3" fill="var(--status-good)"/>
+        <text x="225" y="67" text-anchor="middle" font-size="12" font-weight="800" fill="var(--status-good-text)">27.6%</text>
+        <text class="tick-label" text-anchor="middle" x="225" y="156">Jul 2</text>
+        <!-- exceeded label -->
+        <text x="225" y="57" text-anchor="middle" font-size="10" font-weight="700" fill="var(--status-good-text)">✓ Beats GT</text>
+      </svg>
+      <div class="legend" style="margin-top:4px">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--scen-b)"></span>Detected</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--status-good)"></span>Exceeds GT (Jul 2)</span>
+        <span class="legend-item"><span class="legend-dash" style="border-color:var(--series-aqua)"></span>GT target (25%)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- KEY QUESTION: PURCHASE PATHS -->
+  <p class="section-label">Key Question</p>
+  <div class="key-question-card">
+    <div class="kq-header">
+      <span class="kq-icon">?</span>
+      <div>
+        <div class="kq-label">Stakeholder Question</div>
+        <div class="kq-title">Which exact path led to purchase?</div>
+      </div>
+    </div>
+    <div class="kq-body">
+
+      <!-- Summary answer -->
+      <div class="kq-answer">
+        <strong>Best Seller → Checkout</strong> was the only purchase path consistently detected across all 4 sessions and both scenarios. It is the most reliable signal in the data this week. All other paths appeared in only 1–2 sessions and could not be confirmed against ground truth.
+      </div>
+
+      <!-- Path breakdown -->
+      <div class="kq-paths-grid">
+
+        <!-- Confirmed path -->
+        <div class="kq-path confirmed">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-confirmed">✓ Confirmed — all 4 sessions</span>
+          </div>
+          <div class="kq-path-name">Best Seller → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:100%;background:var(--status-good)"></div>
+          </div>
+          <div class="kq-path-stats">
+            <span>14 shoppers total across sessions</span>
+            <span class="kq-path-note">Only GT-matched path in Scenario B · 3 exact matches Jul 1 · 12 exact matches Jul 2</span>
+          </div>
+        </div>
+
+        <!-- Recurring but unconfirmed -->
+        <div class="kq-path partial">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-partial">~ Recurring — 2 sessions (Jun 30 v2 &amp; Jul 2)</span>
+          </div>
+          <div class="kq-path-name">New Products → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:58%;background:var(--series-aqua)"></div>
+          </div>
+          <div class="kq-path-stats">
+            <span>~4 shoppers total</span>
+            <span class="kq-path-note">Appeared in Scenario A (v2) and Scenario B (Jul 2) · not a GT match in Scenario A</span>
+          </div>
+        </div>
+
+        <div class="kq-path partial">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-partial">~ Seen once — Jun 30 v2</span>
+          </div>
+          <div class="kq-path-name">New Products → Central Hub → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:28%;background:var(--series-aqua);opacity:0.6"></div>
+          </div>
+          <div class="kq-path-stats">
+            <span>2 shoppers</span>
+            <span class="kq-path-note">Scenario A only · not a GT match</span>
+          </div>
+        </div>
+
+        <div class="kq-path partial">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-partial">~ Seen once — Jun 30 v2</span>
+          </div>
+          <div class="kq-path-name">Central Hub → New Products → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:28%;background:var(--series-aqua);opacity:0.6"></div>
+          </div>
+          <div class="kq-path-stats">
+            <span>2 shoppers</span>
+            <span class="kq-path-note">Scenario A only · not a GT match</span>
+          </div>
+        </div>
+
+        <!-- Never detected -->
+        <div class="kq-path undetected">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-undetected">✗ Never detected — expected in Scenario A</span>
+          </div>
+          <div class="kq-path-name">New Products → Premium → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:0%;background:var(--status-critical)"></div>
+            <span class="kq-zero-label">0 shoppers</span>
+          </div>
+          <div class="kq-path-stats">
+            <span class="kq-path-note">GT expected 6 — zero detections in both Jun 30 sessions</span>
+          </div>
+        </div>
+
+        <div class="kq-path undetected">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-undetected">✗ Never detected — expected in Scenario A</span>
+          </div>
+          <div class="kq-path-name">Ltd Edition → Central Hub → New Products → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:0%;background:var(--status-critical)"></div>
+            <span class="kq-zero-label">0 shoppers</span>
+          </div>
+          <div class="kq-path-stats">
+            <span class="kq-path-note">GT expected 6 — zero detections in both Jun 30 sessions</span>
+          </div>
+        </div>
+
+        <div class="kq-path undetected">
+          <div class="kq-path-header">
+            <span class="kq-path-status status-undetected">✗ Never detected — expected in Scenario A</span>
+          </div>
+          <div class="kq-path-name">Premium → Best Seller → Central Hub → Checkout</div>
+          <div class="kq-path-bar-wrap">
+            <div class="kq-path-bar" style="width:0%;background:var(--status-critical)"></div>
+            <span class="kq-zero-label">0 shoppers</span>
+          </div>
+          <div class="kq-path-stats">
+            <span class="kq-path-note">GT expected 6 — zero detections in both Jun 30 sessions</span>
+          </div>
+        </div>
+
+      </div><!-- end kq-paths-grid -->
+
+      <div class="kq-callout">
+        <span class="kq-callout-icon">⚠</span>
+        <div>
+          <strong>Important caveat:</strong> Scenario A (Stress Test) paths that involved Premium and Limited Edition zones were never detected in any session. This may be due to zone attribution gaps and group occlusion at those shelves — not necessarily that shoppers didn't visit them. These paths should be a priority for investigation in the next Scenario A run.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SESSIONS TABLE — grouped by scenario -->
+  <p class="section-label">All Sessions — Detailed Breakdown</p>
+  <div class="table-card">
+    <div class="table-card-header">
+      <h3>Session Results vs. Ground Truth</h3>
+      <p>Sessions grouped by scenario · GT values differ between Scenario A and B</p>
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Session</th>
+          <th>Duration</th>
+          <th>Shoppers (GT: 36)</th>
+          <th>Converters (GT)</th>
+          <th>Conv. Rate (GT)</th>
+          <th>True Positive Rate</th>
+          <th>ID Fragmentation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- SCENARIO A GROUP -->
+        <tr class="scenario-group-row scen-a">
+          <td colspan="7">Scenario A: Group &amp; Shelf Interaction Stress Test — GT: 36 shoppers · 18 converters · 50% conversion rate · 5 journey paths · 3 sessions</td>
+        </tr>
+        <tr>
+          <td><span class="session-chip"><span class="session-dot" style="background:var(--scen-a)"></span>Jun 30 · v1</span></td>
+          <td>44m 51s</td>
+          <td>96 <span class="delta-neg">(+167%)</span></td>
+          <td>17 <span style="color:var(--text-muted)">/ GT 18</span></td>
+          <td>17.7% <span class="delta-neg">vs. 50%</span></td>
+          <td><span class="tp-pill tp-0">0%</span></td>
+          <td class="delta-neg">4.6×</td>
+        </tr>
+        <tr>
+          <td><span class="session-chip"><span class="session-dot" style="background:var(--scen-a); opacity:0.5"></span>Jun 30 · v2</span></td>
+          <td>44m 52s</td>
+          <td>96 <span class="delta-neg">(+167%)</span></td>
+          <td>10 <span style="color:var(--text-muted)">/ GT 18</span></td>
+          <td>10.4% <span class="delta-neg">vs. 50%</span></td>
+          <td><span class="tp-pill tp-0">0%</span></td>
+          <td class="delta-neg">3.7×</td>
+        </tr>
+        <tr>
+          <td><span class="session-chip"><span class="session-dot" style="background:var(--scen-a); opacity:0.7"></span>Jul 3</span></td>
+          <td>43m 10s</td>
+          <td>53 <span class="delta-neg">(+47%)</span></td>
+          <td>14 <span style="color:var(--text-muted)">/ GT 18</span></td>
+          <td>26.4% <span class="delta-neg">vs. 50%</span></td>
+          <td><span class="tp-pill tp-0">0%</span></td>
+          <td class="delta-neg">4.5×</td>
+        </tr>
+        <!-- SCENARIO B GROUP -->
+        <tr class="scenario-group-row scen-b">
+          <td colspan="7">Scenario B: Incremental Number of Actors — GT: 36 shoppers · 9 converters · 25% conversion rate · 7 journey paths</td>
+        </tr>
+        <tr>
+          <td><span class="session-chip"><span class="session-dot" style="background:var(--scen-b)"></span>Jul 1</span></td>
+          <td>17m 48s</td>
+          <td>70 <span class="delta-neg">(+94%)</span></td>
+          <td>7 <span style="color:var(--text-muted)">/ GT 9</span></td>
+          <td>10.0% <span class="delta-neg">vs. 25%</span></td>
+          <td><span class="tp-pill tp-low">4%</span></td>
+          <td class="delta-neg">4.5×</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="session-chip"><span class="session-dot" style="background:var(--status-good)"></span>Jul 2</span>
+            <span class="best-mark">Best</span>
+          </td>
+          <td>18m 35s</td>
+          <td>29 <span class="delta-neg">(−19%)</span></td>
+          <td>8 <span style="color:var(--text-muted)">/ GT 9</span></td>
+          <td style="color:var(--status-good-text);font-weight:700">27.6% <span class="delta-pos">↑ vs. 25%</span></td>
+          <td><span class="tp-pill tp-high">41%</span></td>
+          <td class="delta-neg">4.2×</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- WITHIN-SCENARIO SESSION COMPARISON -->
+  <p class="section-label">Session-to-Session Improvement (Within Each Scenario)</p>
+  <div class="compare-row">
+
+    <!-- Scenario A comparison -->
+    <div class="compare-card scen-a">
+      <div class="compare-header">
+        <span class="scenario-badge" style="background:var(--scen-a);color:#fff">Scenario A</span>
+        <span class="compare-header-label">Group &amp; Shelf Stress Test · Jun 30 v1 → v2 → Jul 3</span>
+      </div>
+      <div class="compare-body">
+        <div class="compare-col-header" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span>Metric</span><span>v1 (Jun 30)</span><span>v2 (Jun 30)</span><span>v3 (Jul 3)</span>
+        </div>
+        <div class="compare-metric-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span class="metric-name">Unique Shoppers</span>
+          <span class="v1">96</span>
+          <span class="v2 same">96 (=)</span>
+          <span class="v2 better">53 ↓</span>
+        </div>
+        <div class="compare-metric-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span class="metric-name">Converters</span>
+          <span class="v1">17</span>
+          <span class="v2 worse">10 ↓</span>
+          <span class="v2 better">14 ↑</span>
+        </div>
+        <div class="compare-metric-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span class="metric-name">Conversion Rate</span>
+          <span class="v1">17.7%</span>
+          <span class="v2 worse">10.4% ↓</span>
+          <span class="v2 better">26.4% ↑</span>
+        </div>
+        <div class="compare-metric-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span class="metric-name">True Positive Rate</span>
+          <span class="v1">0%</span>
+          <span class="v2 same">0% (=)</span>
+          <span class="v2 same">0% (=)</span>
+        </div>
+        <div class="compare-metric-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span class="metric-name">ID Fragmentation</span>
+          <span class="v1">4.6×</span>
+          <span class="v2 better">3.7× ↓</span>
+          <span class="v2 worse">4.5× ↑</span>
+        </div>
+        <div class="compare-metric-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr">
+          <span class="metric-name">Ghost Detections</span>
+          <span class="v1">273 (62%)</span>
+          <span class="v2 better">198 (55%) ↓</span>
+          <span class="v2 better">139 (58%) ↓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario B comparison -->
+    <div class="compare-card scen-b">
+      <div class="compare-header">
+        <span class="scenario-badge" style="background:var(--scen-b);color:#fff">Scenario B</span>
+        <span class="compare-header-label">Incremental Actors · Jul 1 → Jul 2</span>
+      </div>
+      <div class="compare-body">
+        <div class="compare-col-header">
+          <span>Metric</span><span>Jul 1</span><span>Jul 2</span>
+        </div>
+        <div class="compare-metric-row">
+          <span class="metric-name">Unique Shoppers</span>
+          <span class="v1">70</span>
+          <span class="v2 better">29 ↓ (closer to GT)</span>
+        </div>
+        <div class="compare-metric-row">
+          <span class="metric-name">Converters</span>
+          <span class="v1">7</span>
+          <span class="v2 better">8 ↑</span>
+        </div>
+        <div class="compare-metric-row">
+          <span class="metric-name">Conversion Rate</span>
+          <span class="v1">10.0%</span>
+          <span class="v2 better">27.6% ↑ (beats GT)</span>
+        </div>
+        <div class="compare-metric-row">
+          <span class="metric-name">True Positive Rate</span>
+          <span class="v1">4%</span>
+          <span class="v2 better">41% ↑↑</span>
+        </div>
+        <div class="compare-metric-row">
+          <span class="metric-name">ID Fragmentation</span>
+          <span class="v1">4.5×</span>
+          <span class="v2 better">4.2× ↓</span>
+        </div>
+        <div class="compare-metric-row">
+          <span class="metric-name">Ghost Detections</span>
+          <span class="v1">171 (54%)</span>
+          <span class="v2 better">~73 (59% raw) ↓</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PERSISTENT ISSUES -->
+  <p class="section-label">Persistent Issues — Both Scenarios</p>
+  <div class="issues-grid">
+    <div class="issue-card sev-critical">
+      <div class="issue-sev">⬤ Critical</div>
+      <div class="issue-title">Sensor Calibration (Out of Scope)</div>
+      <div class="issue-desc">Height readings of −1,144m to +401m and distance of −6,742m to +3,371m are physically impossible. Depth data is unusable — noted for awareness but outside the scope of current controls.</div>
+      <div class="issue-sessions">All 4 sessions · Both scenarios · No action required from team</div>
+    </div>
+    <div class="issue-card sev-critical">
+      <div class="issue-sev">⬤ Critical</div>
+      <div class="issue-title">ID Fragmentation</div>
+      <div class="issue-desc">3.7–4.6× more IDs than actual shoppers. Worst case: 7 IDs generated for a single person. Re-identification at camera handoffs is unreliable.</div>
+      <div class="issue-sessions">All 4 sessions · Both scenarios · Target: 1×</div>
+    </div>
+    <div class="issue-card sev-high">
+      <div class="issue-sev">⬤ High</div>
+      <div class="issue-title">Ghost Detections</div>
+      <div class="issue-desc">54–62% of raw IDs are sub-2-second noise events filtered before analysis. High noise floor is masking real shopper signals.</div>
+      <div class="issue-sessions">All 4 sessions · Both scenarios</div>
+    </div>
+    <div class="issue-card sev-high">
+      <div class="issue-sev">⬤ High</div>
+      <div class="issue-title">Emotion Model</div>
+      <div class="issue-desc">73–90% of shoppers classified as "anger" in every session. Model output is disabled from reports until retrained on retail-appropriate data.</div>
+      <div class="issue-sessions">All 4 sessions · Both scenarios</div>
+    </div>
+    <div class="issue-card sev-high">
+      <div class="issue-sev">⬤ High</div>
+      <div class="issue-title">Zero Attention Signal</div>
+      <div class="issue-desc">100% of detections record zero gaze/attention duration across all 4 sessions. Gaze data is completely unusable — hardware or orientation issue.</div>
+      <div class="issue-sessions">All 4 sessions · Both scenarios</div>
+    </div>
+    <div class="issue-card sev-medium">
+      <div class="issue-sev">⬤ Medium</div>
+      <div class="issue-title">Camera Imbalance</div>
+      <div class="issue-desc">JNY Cam 2 captures 6–15× more events than other cameras. ~20% of detections cannot be attributed to any destination zone due to coverage gaps.</div>
+      <div class="issue-sessions">All 4 sessions · Both scenarios</div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <p class="section-label">Recommended Next Actions</p>
+  <div class="recs-list">
+    <div class="rec-item">
+      <div class="rec-num">01</div>
+      <div class="rec-body">
+        <h4>Require 3+ frames before assigning a person ID</h4>
+        <p>Sub-2-second ghost events account for 54–62% of all raw IDs. Raising the confidence threshold to 3 frames eliminates most noise at the source and will significantly improve fragmentation ratios.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">02</div>
+      <div class="rec-body">
+        <h4>Improve cross-camera re-identification</h4>
+        <p>Fragmentation of 3.7–4.6× means shoppers are counted multiple times. Scenario B (Incremental Actors) showed improving shopper counts as actor numbers grew (70 → 29 closer to GT 36), but re-ID accuracy needs to reach 1× before the Stress Test can be reliably evaluated at full group density.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">03</div>
+      <div class="rec-body">
+        <h4>Expand destination zone polygons — critical for Scenario A (Stress Test)</h4>
+        <p>Under high group density (Scenario A), 0% of expected paths were detected. Group occlusion and shelf crowding may be causing attribution failures. Wider zone polygons and nearest-neighbour fallback would help recover detections when groups overlap at shelf boundaries.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">04</div>
+      <div class="rec-body">
+        <h4>Retrain emotion model and verify gaze hardware</h4>
+        <p>Both are disabled for reporting. Gaze camera orientation and lighting should be verified before re-running either scenario — attention data is especially important for the Stress Test (Scenario A) where group shelf dwell behaviour is the core signal.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <span>Journeys Pattern Testing · Retail Store · Week of June 30, 2026 · 2 Scenarios · 5 Sessions</span>
+    <span>Generated July 3, 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
